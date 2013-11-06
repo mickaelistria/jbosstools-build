@@ -787,6 +787,33 @@
 				<skipTestsWithPrivateRequirements>true</skipTestsWithPrivateRequirements>
 			</properties>
 		</profile>
+
+		<profile>
+			<id>run-on-installed-application</id>
+			<activation>
+				<property>
+					<name>tycho.surefire.runtimePath</name>
+				</property>
+			</activation>
+			<properties>
+				<!-- Default is for JBDS. Override for other RCP apps: http://wiki.eclipse.org/Tycho/Testing_with_Surefire#p2Installed_on_provisioned_RCP_application -->
+				<tycho.surefire.profileName>jbds</tycho.surefire.profileName>
+				<tycho.surefire.runtimePath>/home/me/jbdevstudio-7.1.0.Final/studio</tycho.surefire.runtimePath>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-surefire-plugin</artifactId>
+						<configuration>
+							<testRuntime>p2Installed</testRuntime>
+							<work>${tycho.surefire.runtimePath}</work>
+							<profileName>${tycho.surefire.profileName}</profileName>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<repositories>
