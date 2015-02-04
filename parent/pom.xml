@@ -14,6 +14,7 @@
 		<!-- ==================================================== -->
 		<BUILD_ALIAS>Final</BUILD_ALIAS>
 		<targetEclipseVersion>4.4 (Luna)</targetEclipseVersion>
+		<lastStableRepository>http://download.jboss.org/jbosstools/updates/stable/luna/</lastStableRepository>
 
 		<!-- ==================================================== -->
 		<!-- General properties, not meant to be tweaked by users -->
@@ -324,6 +325,18 @@
 							<p2StatsUrl>http://download.jboss.org/jbosstools/usage/installs/${project.version}/${BUILD_ALIAS}/${JOB_NAME}/${buildQualifier}</p2StatsUrl>
 						</configuration>
 					</execution>
+          <execution>
+            <goals>
+              <goal>compare-version-with-baselines</goal>
+            </goals>
+            <phase>verify</phase>
+            <configuration>
+              <baselines>
+                <repo>${lastStableRepository}</repo>
+              </baselines>
+            </configuration>
+          </execution>
+
 				</executions>
 			</plugin>
 		</plugins>
