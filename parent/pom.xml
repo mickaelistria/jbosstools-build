@@ -12,7 +12,6 @@
 		<!-- ==================================================== -->
 		<!-- Build properties, to be updated with every milestone or new Eclipse release -->
 		<!-- ==================================================== -->
-		<BUILD_ALIAS>Alpha3</BUILD_ALIAS>
 		<targetEclipseVersion>4.6 (Neon)</targetEclipseVersion>
 		<eclipseReleaseName>neon</eclipseReleaseName>
 		<devstudioReleaseVersion>10.0</devstudioReleaseVersion>
@@ -144,52 +143,42 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-packaging-plugin</artifactId>
-				<version>${tychoVersion}</version>
-				<configuration>
-					<format>'${BUILD_ALIAS}-v'yyyyMMdd-HHmm</format>
-					<sourceReferences>
-						<generate>true</generate>
-					</sourceReferences>
-					<archiveSite>true</archiveSite>
-					<environments>
-						<environment>
-							<os>macosx</os>
-							<ws>cocoa</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
-					</environments>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.eclipse.tycho.extras</groupId>
-						<artifactId>tycho-sourceref-jgit</artifactId>
-						<version>${tychoExtrasVersion}</version>
-					</dependency>
-				</dependencies>
+				<groupId>ru.concerteza.buildnumber</groupId>
+				<artifactId>maven-jgit-buildnumber-plugin</artifactId>
+				<version>1.2.9</version>
+				<executions>
+					<execution>
+						<id>git-buildnumber</id>
+						<!-- has to happen before the tycho-buildqualifier during "initialize" phase -->
+						<phase>validate</phase>
+						<goals>
+							<!-- Sets git.branch -->
+							<goal>extract-buildnumber</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-
+			<plugin>
+				<groupId>org.codehaus.groovy.maven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>set-BUILD_ALIAS</id>
+						<!-- has to happen before the tycho-buildqualifier during "initialize" phase -->
+						<phase>validate</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								project.properties["BUILD_ALIAS"] = project.properties["git.branch"].replace('.', '_')
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
@@ -402,6 +391,64 @@
 
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-packaging-plugin</artifactId>
+					<version>${tychoVersion}</version>
+					<configuration>
+						<format>'${BUILD_ALIAS}-v'yyyyMMdd-HHmm</format>
+						<sourceReferences>
+							<generate>true</generate>
+						</sourceReferences>
+						<archiveSite>true</archiveSite>
+						<environments>
+							<environment>
+								<os>macosx</os>
+								<ws>cocoa</ws>
+								<arch>x86_64</arch>
+							</environment>
+							<environment>
+								<os>win32</os>
+								<ws>win32</ws>
+								<arch>x86</arch>
+							</environment>
+							<environment>
+								<os>win32</os>
+								<ws>win32</ws>
+								<arch>x86_64</arch>
+							</environment>
+							<environment>
+								<os>linux</os>
+								<ws>gtk</ws>
+								<arch>x86</arch>
+							</environment>
+							<environment>
+								<os>linux</os>
+								<ws>gtk</ws>
+								<arch>x86_64</arch>
+							</environment>
+						</environments>
+					</configuration>
+					<executions>
+						<!-- Delay execution so BUILD_ALIAS can be set previously -->
+						<execution>
+							<id>default-build-qualifier</id>
+							<phase>initialize</phase>
+						</execution>
+						<execution>
+							<id>default-build-qualifier-aggregator</id>
+							<phase>initialize</phase>
+						</execution>
+					</executions>
+					<dependencies>
+						<dependency>
+							<groupId>org.eclipse.tycho.extras</groupId>
+							<artifactId>tycho-sourceref-jgit</artifactId>
+							<version>${tychoExtrasVersion}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				
 				<!-- This plugin's configuration is used to store Eclipse m2e settings only. -->
 				<!-- It has no influence on the Maven build itself. -->
 				<!-- Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=350414 -->
